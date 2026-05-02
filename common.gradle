@@ -1,0 +1,39 @@
+// Common build configuration for Aniyomi extensions
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+        versionCode extVersionCode
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+        }
+    }
+}
+
+dependencies {
+    // Aniyomi extensions library
+    compileOnly "eu.kanade.tachiyomi:extensions:1.4.5"
+    
+    // OkHttp for network requests
+    implementation "com.squareup.okhttp3:okhttp:4.11.0"
+    
+    // JSON handling
+    implementation "org.json:json:20230227"
+}
+
+// Set the extension name and class
+android.defaultConfig {
+    buildConfigField "String", "EXTENSION_NAME", "\"${extName}\""
+    buildConfigField "String", "EXTENSION_CLASS", "\"eu.kanade.tachiyomi.animeextension.en.manhwareader${extClass}\""
+}  

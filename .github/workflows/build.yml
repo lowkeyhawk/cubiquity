@@ -1,0 +1,72 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build extension
+      run: ./gradlew assembleRelease
+    
+    - name: Get version
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    
+    - name: Rename APK
+      run: |
+        mv src/en/manhwareader/build/outputs/apk/release/*.apk manhwareader-${{ steps.get_version.outputs.VERSION }}.apk
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: manhwareader-*.apk
+        body: |
+          Manhwa Reader Extension Release ${{ steps.get_version.outputs.VERSION }}
+          
+          ## Installation
+          1. Add repo URL to Aniyomi: `https://raw.githubusercontent.com/${{ github.repository }}/main/repo/index.min.json`
+          2. Refresh extensions
+          3. Install Manhwa Reader extension
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update repo index
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        # Update APK URL in index files with actual release URL
+        # URLs are already set to lowkeyhawk/cubiquity
+        # Uncomment below if you want dynamic username replacement
+        # sed -i "s|lowkeyhawk|${{ github.repository_owner }}|g" repo/index.json
+        # sed -i "s|lowkeyhawk|${{ github.repository_owner }}|g" repo/index.min.json
+        sed -i "s|v1.0.0|${{ steps.get_version.outputs.VERSION }}|g" repo/index.json
+        sed -i "s|v1.0.0|${{ steps.get_version.outputs.VERSION }}|g" repo/index.min.json
+    
+    - name: Commit and push updated index
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add repo/index.json repo/index.min.json
+        git commit -m "Update repo index for ${{ steps.get_version.outputs.VERSION }}" || echo "No changes to commit"
+        git push

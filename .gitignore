@@ -1,0 +1,30 @@
+# Built files
+*.apk
+*.ap_
+*.dex
+
+# Gradle files
+.gradle/
+build/
+*/build/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Keystore files
+*.keystore
+*.jks
