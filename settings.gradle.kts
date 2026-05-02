@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-include ':extensions:en:manhwareader'
+include(":extensions:en:manhwareader")
 
-rootProject.name = 'manhwa-reader-extensions'
+rootProject.name = "manhwa-reader-extensions"

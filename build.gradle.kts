@@ -22,32 +22,35 @@ allprojects {
 }  
 
 subprojects {  
-    apply plugin: 'com.android.library'  
-    apply plugin: 'kotlin-android'  
+    apply(plugin = "com.android.library")  
+    apply(plugin = "kotlin-android")  
 
-    android {  
-        compileSdk 33  
+    configure<com.android.build.gradle.LibraryExtension> {  
+        compileSdk = 33  
 
         defaultConfig {  
-            minSdk 21  
-            targetSdk 33  
+            minSdk = 21  
+            targetSdk = 33  
         }  
 
         sourceSets {  
-            main {  
-                java.srcDirs = ['src']  
+            getByName("main") {  
+                java.srcDirs("src")  
             }  
         }  
     }  
 
     dependencies {  
         // Aniyomi extensions library  
-        compileOnly("eu.kanade.tachiyomi:extensions:1.4.5")  
+        "compileOnly"("eu.kanade.tachiyomi:extensions:1.4.5")  
           
         // OkHttp for network requests  
-        implementation("com.squareup.okhttp3:okhttp:4.11.0")  
+        "implementation"("com.squareup.okhttp3:okhttp:4.11.0")  
           
-        // Jsoup for HTML parsing  
+        // JSON handling
+        "implementation"("org.json:json:20230227")  
+    }  
+}  
         implementation("org.jsoup:jsoup:1.16.1")  
     }  
 }  
